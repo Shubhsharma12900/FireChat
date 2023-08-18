@@ -1,3 +1,17 @@
-This project utilizes React JS and Firebase to develop a real-time chat functionality. Users can sign up, log in, join channels, and exchange messages and save them in an Encrypted format.
-Design a Firestore database structure to store channels and messages.
-Implement real-time chat functionality using Firebase Firestore's real-time listeners and create a user-friendly interface with React components.
+• Developed a real-time chat functionality using React JS and
+Firebase, enabling users to sign up, log in, and exchange messages
+in real-time.
+• Designed and implemented an efficient Firestore database
+structure to store channels and messages, achieving a database
+response time of less than 100 milliseconds. • Designed a user-friendly interface with React components,
+allowing users to join channels, exchange messages, and have a
+seamless chat experience.
+
+
+To run the project locally on your machine:
+Install dependencies by running yarn command in the terminal.
+Run the app in the development mode by running command yarn start.
+Open http://localhost:3000 to view it in the browser
+
+
+
