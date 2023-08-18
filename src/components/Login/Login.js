@@ -30,7 +30,7 @@ function Login() {
           src="https://a.slack-edge.com/bv1-8/slack_logo-ebd02d1.svg"
           alt="slack-logo"
         />
-        <h1>Sign in to Slack</h1>
+        <h1>Sign in to FireChat</h1>
         <p>slack.com</p>
         <Button variant="outlined" color="primary" onClick={signIn}>
           Sign In with Google
