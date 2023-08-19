@@ -1,68 +1,139 @@
-import React, { useState, useEffect } from "react";
-import "./Sidebar.css";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import CreateIcon from "@material-ui/icons/Create";
-import SidebarOption from "./SidebarOption";
-import InsertCommentIcon from "@material-ui/icons/InsertComment";
-import InboxIcon from "@material-ui/icons/Inbox";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
-import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
-import AppsIcon from "@material-ui/icons/Apps";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import AddIcon from "@material-ui/icons/Add";
-import db from "../Firebase/firebase";
-import { useStateValue } from "../Utility/StateProvider";
+import './Sidebar.css'
+import { useState, useEffect } from 'react'
+import { auth } from '../../firebase'
+import SidebarOption from '../sidebarOption/SidebarOption'
+import CreateIcon from '@material-ui/icons/Create'
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
+import InsertCommentIcon from '@material-ui/icons/InsertComment'
+import AlternateEmailIcon from '@material-ui/icons/AlternateEmail'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import AddIcon from '@material-ui/icons/Add'
+import { CometChat } from '@cometchat-pro/chat'
+import { Link, useHistory } from 'react-router-dom'
 
 function Sidebar() {
-  const [channels, setChannels] = useState([]);
-  const [{ user }] = useStateValue();
+  const [channels, setChannels] = useState([])
+  const [user, setUser] = useState(null)
+  const [dms, setDms] = useState([])
+  const history = useHistory()
+
+  const getDirectMessages = () => {
+    const limit = 10
+    const usersRequest = new CometChat.UsersRequestBuilder()
+      .setLimit(limit)
+      .friendsOnly(true)
+      .build()
+
+    usersRequest
+      .fetchNext()
+      .then((userList) => setDms(userList))
+      .catch((error) => {
+        console.log('User list fetching failed with error:', error)
+      })
+  }
+
+  const getChannels = () => {
+    const limit = 30
+    const groupsRequest = new CometChat.GroupsRequestBuilder()
+      .setLimit(limit)
+      .joinedOnly(true)
+      .build()
+
+    groupsRequest
+      .fetchNext()
+      .then((groupList) => setChannels(groupList))
+      .catch((error) => {
+        console.log('Groups list fetching failed with error', error)
+      })
+  }
+
+  const logOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        localStorage.removeItem('user')
+        history.push('/login')
+      })
+      .catch((error) => console.log(error.message))
+  }
 
   useEffect(() => {
-    // Run this code ONCE when the sidebar component loads
-    db.collection("rooms").onSnapshot((snapshot) =>
-      setChannels(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name,
-        }))
-      )
-    );
-  }, []);
+    const data = localStorage.getItem('user')
+    setUser(JSON.parse(data))
+
+    getChannels()
+    getDirectMessages()
+  }, [])
 
   return (
     <div className="sidebar">
-      <div className="sidebar_header">
-        <div className="sidebar_info">
-          <h2>{user?.displayName}</h2>
+      <div className="sidebar__header">
+        <div className="sidebar__info">
+          <h2>
+            <Link to="/">Cometchat (e)</Link>
+          </h2>
           <h3>
             <FiberManualRecordIcon />
-            {user?.displayName}
+            {user?.displayName.split(' ')[0]}
           </h3>
         </div>
         <CreateIcon />
       </div>
-      <SidebarOption Icon={InsertCommentIcon} title={"Thread"} />
-      <SidebarOption Icon={InboxIcon} title={"Mentions & reactions"} />
-      <SidebarOption Icon={DraftsIcon} title={"Saved items"} />
-      <SidebarOption Icon={BookmarkBorderIcon} title={"Channel browser"} />
-      <SidebarOption Icon={PeopleAltIcon} title={"People & user groups"} />
-      <SidebarOption Icon={AppsIcon} title={"Apps"} />
-      <SidebarOption Icon={FileCopyIcon} title={"File browser"} />
-      <SidebarOption Icon={ExpandLessIcon} title={"Show less"} />
-      <hr />
-      <SidebarOption Icon={ExpandMoreIcon} title={"Channels"} />
-      <hr />
-      <SidebarOption Icon={AddIcon} title={"Add Channel"} addChannelOption />
-      {/* Connect db and list all the channels */}
-      {channels.map((channel) => (
-        <SidebarOption title={channel.name} id={channel.id} />
-      ))}
-      {/* SidebarOptions... */}
+      <div className="sidebar__options">
+        <SidebarOption Icon={InsertCommentIcon} title="Thread" />
+        <SidebarOption Icon={AlternateEmailIcon} title="Mentions & Reactions" />
+        <SidebarOption Icon={MoreVertIcon} title="More" />
+        <hr />
+        <SidebarOption Icon={ArrowDropDownIcon} title="Channels" />
+        <hr />
+        {channels.map((channel) =>
+          channel.type === 'private' ? (
+            <SidebarOption
+              Icon={LockOutlinedIcon}
+              title={channel.name}
+              id={channel.guid}
+              key={channel.guid}
+              sub="sidebarOption__sub"
+            />
+          ) : (
+            <SidebarOption
+              title={channel.name}
+              id={channel.guid}
+              key={channel.guid}
+              sub="sidebarOption__sub"
+            />
+          )
+        )}
+
+        <SidebarOption
+          Icon={AddIcon}
+          title="Add Channel"
+          sub="sidebarOption__sub"
+          addChannelOption
+        />
+        <hr />
+        <SidebarOption Icon={ArrowDropDownIcon} title="Direct Messages" />
+        <hr />
+        {dms.map((dm) => (
+          <SidebarOption
+            Icon={FiberManualRecordIcon}
+            title={dm.name}
+            id={dm.uid}
+            key={dm.uid}
+            sub="sidebarOption__sub sidebarOption__color"
+            user
+            online={dm.status === 'online' ? 'isOnline' : ''}
+          />
+        ))}
+      </div>
+
+      <button className="sidebar__logout" onClick={logOut}>
+        Logout
+      </button>
     </div>
-  );
+  )
 }
 
-export default Sidebar;
+export default Sidebar
