@@ -26,12 +26,9 @@ function Login() {
   return (
     <div className="login">
       <div className="login_container">
-        <img
-          src="https://a.slack-edge.com/bv1-8/slack_logo-ebd02d1.svg"
-          alt="slack-logo"
-        />
+
         <h1>Sign in to FireChat</h1>
-        <p>slack.com</p>
+        <p>FireChat.com</p>
         <Button variant="outlined" color="primary" onClick={signIn}>
           Sign In with Google
         </Button>
