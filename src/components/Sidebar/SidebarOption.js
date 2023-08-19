@@ -1,46 +1,47 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
-import "./SidebarOption.css";
-import db from "../Firebase/firebase";
+import './SidebarOption.css'
+import { useHistory } from 'react-router-dom'
 
-function SidebarOption({ Icon, title, id, addChannelOption }) {
-  const history = useHistory();
-
+function SidebarOption({
+  Icon,
+  title,
+  sub,
+  id,
+  addChannelOption,
+  user,
+  online,
+}) {
+  const history = useHistory()
   const selectChannel = () => {
-    console.log("clicked on SelectChannel");
     if (id) {
-      history.push(`/room/${id}`);
+      if (user) {
+        history.push(`/users/${id}`)
+      } else {
+        history.push(`/channels/${id}`)
+      }
     } else {
-      history.push("title");
+      history.push(title)
     }
-  };
+  }
 
   const addChannel = () => {
-    console.log("clicked on addChannel");
-    const channelName = prompt("Please enter the channel name!");
-
-    if (channelName) {
-      db.collection("rooms").add({
-        name: channelName,
-      });
-    }
-  };
+    history.push('/add/channel')
+  }
 
   return (
     <div
-      className="sidebarOption"
-      // ternary condition will not executed in right way
+      className={`sidebarOption ${online} ${sub}`}
       onClick={addChannelOption ? addChannel : selectChannel}
     >
-      {Icon && <Icon className="sidebarOption_icon" />}
+      {Icon && <Icon className="sidebarOption__icon" />}
       {Icon ? (
         <h3>{title}</h3>
       ) : (
-        <h3 className="sidebarOption_channel">
-          <span className="sidebarOption_hash">#</span> {title}{" "}
+        <h3 className="sidebarOption__channel">
+          <span className="sidebarOption__hash">#</span> {title}
         </h3>
       )}
     </div>
-  );
+  )
 }
-export default SidebarOption;
+
+export default SidebarOption

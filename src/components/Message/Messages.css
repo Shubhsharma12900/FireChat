@@ -1,22 +1,56 @@
-.messages {
+.message {
   display: flex;
   align-items: center;
-  padding: 20px;
+  margin: 10px 0;
+  padding: 5px 20px;
 }
 
-.messages > img {
-  height: 50px;
-  width: 50px;
-  object-fit: contain;
+.message:hover {
+  background-color: #f3f3f3;
 }
 
-.messages_info {
-  padding: 10px;
+.message__left .MuiAvatar-root {
+  border-radius: 20%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
 }
 
-.messages_timestamp {
-  color: grey;
-  font-weight: 300;
-  padding-left: 5px;
-  font-size: 13px;
+.message__left {
+  margin-right: 10px;
+}
+
+.message__details a {
+  margin-right: 5px;
+  color: black;
+  text-decoration: none;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.message__text {
+  font-size: 14px;
+}
+
+.message__data {
+  display: flex;
+  align-items: center;
+  flex: 0.7;
+}
+
+.message__actions {
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0.3;
+}
+
+.message__actions__show {
+  visibility: visible;
+}
+
+.message__actions .MuiSvgIcon-root {
+  margin-right: 10px;
+  cursor: pointer;
 }
